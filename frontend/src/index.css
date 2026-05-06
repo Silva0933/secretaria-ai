@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 7%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 7%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 7%;
+    --primary: 213 73% 21%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 159 100% 35%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 7%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 213 73% 21%;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-[#F8FAFC] text-[#0F172A];
+    font-family: 'DM Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+  }
+  code, pre, .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: #F1F5F9; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+  .kanban-scroll::-webkit-scrollbar { height: 6px; }
+  .kanban-scroll::-webkit-scrollbar-track { background: #F1F5F9; border-radius: 3px; }
+  .kanban-scroll::-webkit-scrollbar-thumb { background: #94A3B8; border-radius: 3px; }
+
+  .chat-scroll::-webkit-scrollbar { width: 4px; }
+  .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+  .chat-scroll::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 2px; }
+}
+
+/* Urgency pulse animation */
+@keyframes urgent-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); border-color: #EF4444; }
+  50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); border-color: #DC2626; }
+}
+.urgent-card {
+  animation: urgent-pulse 2s ease-in-out infinite;
+  border-left: 3px solid #EF4444 !important;
+}
+
+/* Slide in animation */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.slide-in { animation: slideIn 0.2s ease-out; }
+
+/* Card hover */
+.kanban-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.kanban-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(15, 45, 94, 0.12);
+}
+
+/* Drag states */
+.drag-over-col {
+  background: rgba(99, 102, 241, 0.05) !important;
+  border: 2px dashed #6366F1 !important;
+}
+.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+/* Message bubbles */
+.msg-paciente {
+  background: #F1F5F9;
+  color: #0F172A;
+  border-radius: 0 12px 12px 12px;
+}
+.msg-ia {
+  background: #EEF2FF;
+  color: #3730A3;
+  border-radius: 12px 0 12px 12px;
+}
+.msg-operador {
+  background: #ECFDF5;
+  color: #065F46;
+  border-radius: 12px 0 12px 12px;
+}
+
+[data-debug-wrapper="true"] { display: contents !important; }

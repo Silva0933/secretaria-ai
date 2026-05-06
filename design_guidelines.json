@@ -1,0 +1,101 @@
+{
+  "project": "ClinicaPanel v2.0",
+  "theme": "LIGHT",
+  "archetype": "Organic & Earthy / Swiss Hybrid",
+  "rationale": "Medical and health platforms require trust, calm, and clarity (Organic & Earthy), while B2B SaaS requires density, data correlation, and precision (Swiss High-Contrast). We blend deep blues and emeralds with crisp layouts.",
+  "typography": {
+    "font_families": {
+      "display": "'Plus Jakarta Sans', sans-serif",
+      "body": "'DM Sans', sans-serif",
+      "mono": "'JetBrains Mono', monospace"
+    },
+    "scale": {
+      "h1": "text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-slate-900",
+      "h2": "text-2xl sm:text-3xl font-bold tracking-tight text-slate-900",
+      "h3": "text-xl sm:text-2xl font-bold tracking-tight text-slate-800",
+      "h4": "text-lg sm:text-xl font-bold tracking-tight text-slate-800",
+      "body": "text-base font-normal text-slate-600 leading-relaxed",
+      "small": "text-sm font-medium text-slate-500",
+      "overline": "text-xs font-bold uppercase tracking-[0.2em] text-slate-500"
+    },
+    "rules": [
+      "No 'Inter' or generic sans. Use Plus Jakarta Sans for all headings.",
+      "Headings > 24px MUST use 'tracking-tight'.",
+      "Status labels use 'overline' text styling for high legibility."
+    ]
+  },
+  "colors": {
+    "palette": {
+      "primary": { "DEFAULT": "#0F2D5E", "foreground": "#FFFFFF" },
+      "secondary": { "DEFAULT": "#00B37E", "foreground": "#FFFFFF" },
+      "alert": { "DEFAULT": "#F59E0B", "foreground": "#FFFFFF", "background": "#FEF3C7" },
+      "urgency": { "DEFAULT": "#EF4444", "foreground": "#FFFFFF", "background": "#FEE2E2", "pulse": "rgba(239, 68, 68, 0.5)" },
+      "info": { "DEFAULT": "#6366F1", "foreground": "#FFFFFF", "background": "#E0E7FF" },
+      "background": "#F8FAFC",
+      "surface": "#FFFFFF",
+      "border": "#E2E8F0",
+      "text": { "primary": "#0F172A", "secondary": "#475569", "muted": "#94A3B8" }
+    },
+    "rules": [
+      "Use explicit hover states. Example: hover:bg-primary/90 hover:text-white.",
+      "Never use pure black or pure gray. Always tint neutrals (Slate 50-900).",
+      "Urgency states must use a pulsating border or soft red background for immediate attention."
+    ]
+  },
+  "layout_and_spacing": {
+    "grid_system": "Mode B: The Control Room Grid",
+    "spacing_scale": "Tailwind standard (p-2, p-4, p-6, p-8). Cards use p-6 internally.",
+    "border_radius": "Subtle roundness. max 'rounded-lg' (8px) for containers, 'rounded-md' for buttons.",
+    "surfaces": {
+      "cards": "bg-white border border-slate-200 shadow-sm rounded-lg",
+      "kanban_column": "bg-slate-50/50 border border-slate-200 rounded-lg flex flex-col gap-3 p-3",
+      "sidebar": "bg-white border-r border-slate-200 flex flex-col h-full",
+      "topbar": "bg-white/90 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40"
+    },
+    "specific_layouts": {
+      "chat_module": "Grid cols-12. Sidebar (col-span-3), Chat Area (col-span-6), Patient Info (col-span-3). h-[calc(100vh-header_height)].",
+      "kanban_module": "Horizontal scroll flex container. 8 columns. Each column w-80 min-w-[20rem]."
+    }
+  },
+  "motion_and_interactions": {
+    "urgency_card": "Animate a pulsating red border. 'animate-pulse ring-2 ring-red-400/50 border-red-500'.",
+    "aguardando_humano": "Background tinted with red-50 to red-100 gradient. 'bg-gradient-to-b from-red-50 to-red-100/50'.",
+    "hover_states": "All buttons and interactive cards must lift slightly ('hover:-translate-y-[1px]') and increase shadow.",
+    "transitions": "Use 'transition-all duration-200 ease-in-out' for color and transform changes."
+  },
+  "components": {
+    "data_testid_rule": "ALL interactive elements MUST have a kebab-case data-testid attribute based on role.",
+    "buttons": "Flat colors, subtle radius (rounded-md). Primary uses #0F2D5E, Success/Accept uses #00B37E.",
+    "badges": "Status badges must use soft backgrounds with dark text (e.g., bg-emerald-100 text-emerald-800).",
+    "banners": "AI/Human status banner: AI Active (bg-indigo-50 text-indigo-700 border-indigo-200), Human Active (bg-emerald-50 text-emerald-700 border-emerald-200)."
+  },
+  "icons": {
+    "library": "lucide-react",
+    "usage": "Use 20px (w-5 h-5) for standard inline icons, 16px (w-4 h-4) for dense data rows. Stroke width 1.5 for a clean, premium look."
+  },
+  "media": {
+    "login_hero": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/b90bd42a-6db5-490c-95a0-6d27dbd83125/images/df445cfd3b9b0c310176e5335e7286fede612d109cded4132a9e4d12968c48bd.png",
+      "description": "Minimalist abstract geometric shapes in deep blue and emerald green. Use for login page background."
+    },
+    "clinic_interior_bg": {
+      "url": "https://static.prod-images.emergentagent.com/jobs/b90bd42a-6db5-490c-95a0-6d27dbd83125/images/18477913b6b71f52637ca0c3b735852c9482dbe84330b13e33fd4ad7dc8b02ff.png",
+      "description": "Clean, bright clinic interior. Use as an alternative background or contextual image in Super-Admin landing."
+    }
+  },
+  "instructions_to_main_agent": {
+    "setup": [
+      "Ensure Tailwind config uses the specific hex codes provided in the PRD (#0F2D5E, #00B37E, etc.).",
+      "Import Google Fonts: Plus Jakarta Sans, DM Sans, JetBrains Mono.",
+      "Initialize Lucide React for icons.",
+      "Create robust layout wrappers. Use standard .js files (not .tsx) since the environment requires it."
+    ],
+    "development": [
+      "Build the Multi-Tenant Dashboard first, focusing on the Control Room grid density.",
+      "Implement the 3-column Chat View with fixed heights and internal scrolling.",
+      "Implement the Kanban Board with horizontal scrolling, and custom styling for 'Aguardando Humano' and Urgent cards.",
+      "Ensure ALL interactive elements have 'data-testid' attributes (e.g., data-testid='login-submit-btn', data-testid='kanban-card-urgent').",
+      "Do NOT use HTML native components for dropdowns/selects; use Shadcn equivalents heavily customized to remove the generic 'Vercel' look."
+    ]
+  }
+}

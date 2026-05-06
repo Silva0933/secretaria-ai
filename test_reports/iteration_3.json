@@ -1,0 +1,50 @@
+{
+  "summary": "Tested ClinicaPanel v2.0 integrations (Stripe, Web Push/VAPID, Google OAuth, Evolution send, super-admin health, Stripe webhook tolerance) + frontend Configuracoes (Plano/Notificacoes/Integracoes) + BillingSuccess. 11/12 backend pass; 1 CRITICAL bug in checkout status polling. All frontend data-testids present and working.",
+  "backend_issues": {
+    "critical": [
+      {
+        "endpoint": "GET /api/billing/checkout/status/{session_id}",
+        "issue": "Returns HTTP 502 with Pydantic validation error: 'CheckoutStatusResponse.metadata Input should be a valid dictionary [type=dict_type, input_value=<StripeObject ...>]'. The emergentintegrations StripeCheckout.get_checkout_status() builds a Pydantic CheckoutStatusResponse where `metadata` is typed as dict but Stripe SDK returns a StripeObject. This makes BillingSuccess.js polling fail on EVERY call -> user never sees 'paid' confirmation after Stripe redirect, even when payment goes through.",
+        "priority": "CRITICAL"
+      }
+    ],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Billing — return from Stripe to /billing/success",
+        "issue": "Polling /api/billing/checkout/status/{id} always errors due to backend 502 (see critical bug above). After 6 attempts UI shows 'Pagamento não confirmado' even on successful payments. Webhook /api/webhook/stripe also persists payment_status, so DB will eventually reflect 'paid' but the polling page can never escape error state until that endpoint is fixed.",
+        "affected_selectors": ["[data-testid=billing-success-page]", "[data-testid=billing-error]"]
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_integrations.py",
+    "/app/backend/tests/test_clinicapanel.py",
+    "/app/test_reports/pytest/integrations_results.xml"
+  ],
+  "action_items": [
+    "FIX (CRITICAL) in /app/backend/routes/billing_routes.py checkout_status(): wrap StripeCheckout.get_checkout_status() failure to use Stripe SDK directly OR convert metadata via dict(stripe_obj) before validation. Quick mitigation: after `await stripe_checkout.get_checkout_status(session_id)` raises, fall back to retrieving session via `stripe.checkout.Session.retrieve(session_id)` and read .payment_status / .status manually. Without this fix the post-checkout UX is broken.",
+    "Consider also: stripe webhook is tolerant (returns 200 even with invalid signature) — fine for dev, but main agent should later validate signature with STRIPE_WEBHOOK_SECRET in production."
+  ],
+  "critical_code_review_comments": [
+    "billing_routes.py line 127: get_checkout_status crashes on Stripe SDK metadata type — same root cause as critical bug; needs upstream workaround.",
+    "billing_routes.py line 41: BACKEND_PUBLIC_URL fallback to request.base_url can produce internal/relative URL when behind ingress — currently fine because env var is set, but worth defensive validation.",
+    "webhook_routes.py /stripe: signature validation done by emergentintegrations.handle_webhook; if STRIPE_WEBHOOK_SECRET is not set the parse will likely accept anything — verify.",
+    "integrations_routes.py /google/callback: builds Credentials with token_uri from token_data; OK. cp_oauth_states never expires — add TTL or filter by criado_em > now-15min.",
+    "conversas_routes.py /enviar: Evolution failure correctly persists message with evolution_status=falha and returns ok=false — good UX."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_integrations.py (new)"
+  ],
+  "success_rate": {"backend": "92% (11/12)", "frontend": "100% (all data-testids visible, flows render)"},
+  "test_credentials": "Used /app/memory/test_credentials.md verbatim. Super-admin TOTP generated dynamically via pyotp(JBSWY3DPEHPK3PXP).",
+  "seed_data_creation": "None. Stripe checkout test created 1 real pending payment_transactions row (session_id captured for status check).",
+  "retest_needed": true,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Run REACT_APP_BACKEND_URL=https://health-desk-8.preview.emergentagent.com python -m pytest backend/tests/test_integrations.py -v. The single failing test (TestStripeCheckout::test_checkout_status_pending) is the genuine bug — fix in billing_routes.py before re-running. All other 11 tests pass. Frontend all data-testids confirmed (plan-card-{starter|pro|enterprise}, btn-checkout-{...}, btn-push-enable, btn-google-connect, billing-success-page, billing-error). Pro tenant correctly shows 'Plano atual' disabled state.",
+  "rca_of_the_issue": "TestStripeCheckout::test_checkout_status_pending fails because emergentintegrations.payments.stripe.checkout.StripeCheckout.get_checkout_status() returns a Pydantic CheckoutStatusResponse whose `metadata` field is annotated as `dict`, but Stripe Python SDK returns metadata wrapped as a StripeObject (subclass of dict but not accepted by Pydantic v2 strict dict validation). Pydantic raises type=dict_type ValidationError -> bubbled as Exception -> our route raises 502. Reproduction: POST /api/billing/checkout (admin) gives a session_id, then immediately GET /api/billing/checkout/status/{session_id} -> 502. Mitigation options: (a) convert metadata before passing into Pydantic — patch upstream; (b) catch the ValidationError in checkout_status and fall back to direct Stripe API call using `import stripe; stripe.api_key=...; sess = stripe.checkout.Session.retrieve(session_id)`; (c) wrap response building manually instead of relying on the helper."
+}
